@@ -1,4 +1,6 @@
 $(document).ready(function() {
+    Pace.start();
+
     function handleNoGeolocation(errorFlag) {
         if (errorFlag) {
             var content = 'Error: The Geolocation service failed.';
@@ -14,6 +16,7 @@ $(document).ready(function() {
 
         var infowindow = new google.maps.InfoWindow(options);
         map.setCenter(options.position);
+        Pace.stop();
     }
 
     function initialize() {
@@ -36,7 +39,8 @@ $(document).ready(function() {
                 });
 
                 map.setCenter(pos);
-                map.setZoom(16);
+                map.setZoom(18);
+                Pace.stop();
             }, function() {
                 handleNoGeolocation(true);
             });
