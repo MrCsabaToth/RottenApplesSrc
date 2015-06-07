@@ -36,12 +36,16 @@
                 position: latlon,
                 icon: 'img/apple-map-pin.png',
                 map: self.map,
+                animation: google.maps.Animation.DROP
             });
-            //var infowindow = new google.maps.InfoWindow({
-            //    content: pindata.name +
-            //        'Latitude: ' + location.lat() +
-            //        '<br>Longitude: ' + location.lng()
-            //});
+            var infowindow = new google.maps.InfoWindow({
+                content: pindata.name +
+                    '<br>Latitude: ' + latlon.lat() +
+                    '<br>Longitude: ' + latlon.lng()
+            });
+            google.maps.event.addListener(marker, 'click', function() {
+                infowindow.open(self.map, marker);
+            });
         };
     };
 
@@ -64,7 +68,7 @@
             viewModel.map = map;
 
             // Try HTML5 geolocation
-            if(navigator.geolocation) {
+            if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     var pos = new google.maps.LatLng(position.coords.latitude,
                                                      position.coords.longitude);
@@ -83,6 +87,44 @@
                     for(var i = 0; i < viewModel.pins.length; i++) {
                         viewModel.placeMarker(viewModel.pins[i]);
                     }
+
+                    var search_input = /** @type {HTMLInputElement} */(
+                        document.getElementById('pac-input'));
+                    map.controls[google.maps.ControlPosition.TOP_LEFT].push(search_input);
+                    var searchBox = new google.maps.places.SearchBox(
+                        /** @type {HTMLInputElement} */(search_input));
+                    google.maps.event.addListener(searchBox, 'places_changed', function() {
+                        console.log("places_changed");
+                        var places = searchBox.getPlaces();
+
+                        if (places.length == 0) {
+                            // AJAX request...
+                            console.log("no places");
+                            return;
+                        }
+                        for (var i = 0, marker; marker = markers[i]; i++) {
+                            marker.setMap(null);
+                        }
+
+                        //// For each place, get the icon, place name, and location.
+                        //markers = [];
+                        //var bounds = new google.maps.LatLngBounds();
+                        //for (var i = 0, place; place = places[i]; i++) {
+                        //    // Create a marker for each place.
+                        //    var marker = new google.maps.Marker({
+                        //        map: map,
+                        //        icon: image,
+                        //        title: place.name,
+                        //        position: place.geometry.location
+                        //    });
+                        //
+                        //    markers.push(marker);
+                        //
+                        //    bounds.extend(place.geometry.location);
+                        //}
+                        //
+                        //map.fitBounds(bounds);
+                    });
                 }, function() {
                     viewModel.handleNoGeolocation(true);
                 });
@@ -95,15 +137,13 @@
         $('#languageDialog').on('hidden.bs.modal', function () {
             var script  = document.createElement('script');
             script.type = "text/javascript";
-            scriptsrc = 'https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&sensor=true';
+            scriptsrc = 'https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&sensor=true"; // Intentionally not initialize places library so it wont interfere with us &libraries=places';
             if (viewModel.is_spanish)
                 scriptsrc += "&language=es";
             scriptsrc += '&callback=initializeMaps';
-            console.log(scriptsrc);
             script.src  = scriptsrc;
             document.body.appendChild(script);
             //document.getElementsByTagName('head')[0].appendChild(script);
-            //google.maps.event.addDomListener(window, 'load', viewModel.initializeMaps);
         });
     });
 } (window));

@@ -33,22 +33,26 @@
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <!-- Add your site or application content here -->
+        <!-- Google Maps elements here -->
+        <input id="pac-input" class="controls" type="text" placeholder="Search Box">
         <div role="main" id="map-canvas"></div>
+        <!-- /Google Maps elements here -->
 
         <div class="modal fade" id="languageDialog" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Language selection / Selección de idiomas</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Language selection / Selección de idiomas</h4>
               </div>
-              <!--<div class="modal-body">-->
-                <!--<p></p>-->
-              <!--</div>-->
+              <div class="modal-body">
+                  <div style="background-color: green; border-radius: 4px;">
+                      <img class="img img-responsive" src="img/rotten_apples_logo.png"/>
+                  </div>
+              </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">English</button>
-                <button type="button" class="btn btn-primary" id="spanishbtn">Español</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">English</button>
+                  <button type="button" class="btn btn-primary" id="spanishbtn">Español</button>
               </div>
             </div><!-- /.modal-content -->
           </div><!-- /.modal-dialog -->
