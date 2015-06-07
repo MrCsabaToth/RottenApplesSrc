@@ -46,3 +46,11 @@ body,
 #target {
     width: 345px;
 }
+
+.e-radialmenu .imageclass {
+    background-image: url('themes/images/RadialMenu/main.png');
+}
+
+.e-radialmenu .backimageclass {
+    background-image: url('themes/images/RadialMenu/Back_button.png');
+}

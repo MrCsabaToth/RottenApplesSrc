@@ -59,6 +59,21 @@
             $("#languageDialog").modal("hide");
         });
 
+        window.menuclick = function(evt) {
+            $('#nestedradialmenu').ejRadialMenu("menuHide");
+        };
+        //if (!(ej.browserInfo().name == "msie" && ej.browserInfo().version < 9)) {
+            $('#nestedradialmenu').ejRadialMenu({
+                imageClass: "imageclass",
+                backImageClass: "backimageclass",
+                targetElementId: "map-canvas",
+                mouseUp: "menuclick"
+            });
+        //}
+        //} else {
+        //    $("#contentDiv").html("Radial Menu is only supported from Internet Explorer Versioned 9 and above.").css({ "font-size": "20px", "color": "red" });
+        //}
+
         window.initializeMaps = function() {
             var mapOptions = {
                 zoom: 12,
@@ -97,14 +112,15 @@
                         console.log("places_changed");
                         var places = searchBox.getPlaces();
 
-                        if (places.length == 0) {
-                            // AJAX request...
-                            console.log("no places");
-                            return;
-                        }
-                        for (var i = 0, marker; marker = markers[i]; i++) {
-                            marker.setMap(null);
-                        }
+                        // AJAX request...
+                        console.log("no places");
+                        $('#nestedradialmenu').ejRadialMenu("show");
+
+                        //if (places.length == 0) {
+                        //}
+                        //for (var i = 0, marker; marker = markers[i]; i++) {
+                        //    marker.setMap(null);
+                        //}
 
                         //// For each place, get the icon, place name, and location.
                         //markers = [];
