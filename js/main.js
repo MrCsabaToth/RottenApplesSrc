@@ -7,6 +7,7 @@
                       { "lat":  36.743409, "lon": -119.798075, "name": "Fajita Fiesta", "marker": null },
                       { "lat":  36.741715, "lon": -119.796637, "name": "Toledo's Mexican", "marker": null } ];
         self.map = null;
+        self.marker = [];
 
         self.handleNoGeolocation = function(errorFlag) {
             if (errorFlag) {
@@ -38,6 +39,7 @@
                 map: self.map,
                 animation: google.maps.Animation.DROP
             });
+            self.marker.push(marker);
             var infowindow = new google.maps.InfoWindow({
                 content: pindata.name +
                     '<br>Latitude: ' + latlon.lat() +
@@ -99,9 +101,9 @@
                     Pace.stop();
 
                     // Place pins
-                    for(var i = 0; i < viewModel.pins.length; i++) {
-                        viewModel.placeMarker(viewModel.pins[i]);
-                    }
+                    //for(var i = 0; i < viewModel.pins.length; i++) {
+                    //    viewModel.placeMarker(viewModel.pins[i]);
+                    //}
 
                     var search_input = /** @type {HTMLInputElement} */(
                         document.getElementById('pac-input'));
@@ -109,37 +111,31 @@
                     var searchBox = new google.maps.places.SearchBox(
                         /** @type {HTMLInputElement} */(search_input));
                     google.maps.event.addListener(searchBox, 'places_changed', function() {
-                        console.log("places_changed");
-                        var places = searchBox.getPlaces();
+                        var keyword = $("#pac-input").val();
+                        console.log("search keywrod: " + keyword);
+                        $.ajax({
+                            type: "POST",
+                            url: "http://d6cfa80b.ngrok.io/hospitals_list?filter=" + keyword,
+                            data: JSON.stringify(""),
+                            processData: false,
+                            contentType: "application/json",
+                            dataType: "json"
+                        }).success(function (returnData) {
+                            console.log("Success! " + returnData);
+                            // Clear existing markers
+                            //marker.setMap(null);
 
-                        // AJAX request...
-                        console.log("no places");
-                        $('#nestedradialmenu').ejRadialMenu("show");
-
-                        //if (places.length == 0) {
-                        //}
-                        //for (var i = 0, marker; marker = markers[i]; i++) {
-                        //    marker.setMap(null);
-                        //}
-
-                        //// For each place, get the icon, place name, and location.
-                        //markers = [];
-                        //var bounds = new google.maps.LatLngBounds();
-                        //for (var i = 0, place; place = places[i]; i++) {
-                        //    // Create a marker for each place.
-                        //    var marker = new google.maps.Marker({
-                        //        map: map,
-                        //        icon: image,
-                        //        title: place.name,
-                        //        position: place.geometry.location
-                        //    });
-                        //
-                        //    markers.push(marker);
-                        //
-                        //    bounds.extend(place.geometry.location);
-                        //}
-                        //
-                        //map.fitBounds(bounds);
+                            var retJson = JSON.parse(returnData);
+                            for(var i = 0; i < retJson.length; i++) {
+                                markers = [];
+                                var bounds = new google.maps.LatLngBounds();
+                                self.placeMarker({"lat":  new Number(retJson[i].LATITUDE), "lon": new Number(retJson[i].LONGITUDE), "name": retJson[i].name, "content": retJson[i], "marker": null});
+                                bounds.extend(new google.maps.LatLng(new Number(retJson[i].LATITUDE), new Number(retJson[i].LONGITUDE)));
+                                map.fitBounds(bounds);
+                            }
+                        }).error(function (data) {
+                            console.log("Error: " + data.responseText);
+                        });
                     });
                 }, function() {
                     viewModel.handleNoGeolocation(true);
