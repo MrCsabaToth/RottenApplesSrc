@@ -89,12 +89,12 @@
 
             if (ej.browserInfo().name == "msie" && ej.browserInfo().version < 9) {
                 var infowindow = new google.maps.InfoWindow({
-                    map: self.map,
+                    map: viewModel.map,
                     content: viewModel.isSpanish ?
                         "Radial Men&uacute; requerido para esta aplicaci&oacute;n s&oacute;lo es compatible con versi&oacute;n de Internet Explorer 9 y superiores." :
                         "Radial Menu required for this application is only supported from Internet Explorer Versioned 9 and above."
                 });
-                infowindow.open(self.map);
+                infowindow.open(viewModel.map);
             }
 
             // Try HTML5 geolocation
@@ -112,7 +112,7 @@
                         content: (viewModel.isSpanish ? "Ubicaci&oacute;n encontrado usando HTML5"
                             : "Location found using HTML5.") + "<br>" + viewModel.welcomeText
                     });
-                    infowindow.open(self.map);
+                    infowindow.open(viewModel.map);
 
                     Pace.stop();
 
@@ -165,7 +165,7 @@
 
         $('#languageDialog').on('hidden.bs.modal', function () {
             viewModel.welcomeText = viewModel.isSpanish ?
-                "Por favor introduzca una palabra clave en el cuadro de búsqueda y pulse ENTER" :
+                "Por favor introduzca una palabra clave en el cuadro de b&uacute;squeda y pulse ENTER" :
                 "Please enter a keyword into the search box and press enter.";
             var script  = document.createElement('script');
             script.type = "text/javascript";
