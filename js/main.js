@@ -44,15 +44,15 @@
             });
             markerData.marker = marker;
             self.markers.push(markerData);
-            var infowindow = new google.maps.InfoWindow({
-                map: self.map,
-                content: markerData.name +
-                    '<br>Latitude: ' + markerData.latlng.lat() +
-                    '<br>Longitude: ' + markerData.latlng.lng()
-            });
+            //var infowindow = new google.maps.InfoWindow({
+            //    map: self.map,
+            //    content: markerData.name +
+            //        '<br>Latitude: ' + markerData.latlng.lat() +
+            //        '<br>Longitude: ' + markerData.latlng.lng()
+            //});
             google.maps.event.addListener(marker, 'click', function() {
-                //$('#nestedradialmenu').ejRadialMenu("show");
-                infowindow.open(self.map, marker);
+                $('#nestedradialmenu').ejRadialMenu("show");
+                //infowindow.open(self.map, marker);
             });
         };
     };
