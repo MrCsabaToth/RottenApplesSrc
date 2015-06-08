@@ -15,9 +15,10 @@ body,
 #pac-input {
     background-color: #fff;
     font-family: Roboto;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 300;
     margin-left: 12px;
+    margin-top: 12px;
     padding: 0 11px 0 13px;
     text-overflow: ellipsis;
     width: 400px;
@@ -48,9 +49,9 @@ body,
 }
 
 .e-radialmenu .imageclass {
-    background-image: url('themes/images/RadialMenu/main.png');
+    background-image: url('../themes/images/RadialMenu/main.png');
 }
 
 .e-radialmenu .backimageclass {
-    background-image: url('themes/images/RadialMenu/Back_button.png');
+    background-image: url('../themes/images/RadialMenu/Back_button.png');
 }
