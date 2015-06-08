@@ -1,11 +1,17 @@
 (function (window) {
+    function MarkerData(id, latStr, lngStr, name, data) {
+        var self2 = this;
+        self2.id = id;
+        self2.name = name;
+        self2.latlng = new google.maps.LatLng(new Number(latStr), new Number(lngStr));
+        self2.data = data;
+        self2.marker = null;
+    }
+
     var ViewModel = function () {
         var self = this;
         self.isSpanish = false;
         self.markers = [];
-        //[ { "lat":  36.740769, "lon": -119.798396, "name": "Tokyo Garden", "marker": null },
-        //  { "lat":  36.743409, "lon": -119.798075, "name": "Fajita Fiesta", "marker": null },
-        //  { "lat":  36.741715, "lon": -119.796637, "name": "Toledo's Mexican", "marker": null } ];
         self.map = null;
         self.welcomeText = "";
 
@@ -29,20 +35,20 @@
             $("#languageDialog").modal("show");
         };
 
-        self.placeMarker = function(pindata) {
-            var latlon = new google.maps.LatLng(pindata.lat, pindata.lon);
+        self.placeMarker = function(markerData) {
             var marker = new google.maps.Marker({
-                position: latlon,
+                position: markerData.latlon,
                 icon: 'img/apple-map-pin.png',
                 map: self.map,
                 animation: google.maps.Animation.DROP
             });
-            self.markers.push(marker);
+            markerData.marker = marker;
+            self.markers.push(markerData);
             var infowindow = new google.maps.InfoWindow({
                 map: self.map,
-                content: pindata.name +
-                    '<br>Latitude: ' + latlon.lat() +
-                    '<br>Longitude: ' + latlon.lng()
+                content: markerData.name +
+                    '<br>Latitude: ' + markerData.latlng.lat() +
+                    '<br>Longitude: ' + markerData.latlng.lng()
             });
             google.maps.event.addListener(marker, 'click', function() {
                 //$('#nestedradialmenu').ejRadialMenu("show");
@@ -88,6 +94,7 @@
                         "Radial Men&uacute; requerido para esta aplicaci&oacute;n s&oacute;lo es compatible con versi&oacute;n de Internet Explorer 9 y superiores." :
                         "Radial Menu required for this application is only supported from Internet Explorer Versioned 9 and above."
                 });
+                infowindow.open(self.map);
             }
 
             // Try HTML5 geolocation
@@ -96,16 +103,17 @@
                     var pos = new google.maps.LatLng(position.coords.latitude,
                                                      position.coords.longitude);
 
+                    viewModel.map.setCenter(pos);
+                    // TODO: execute all the rest outside of this section, so it'll apply in case of no geolocation too
+                    viewModel.map.setZoom(18);
                     var infowindow = new google.maps.InfoWindow({
                         map: viewModel.map,
                         position: pos,
                         content: (viewModel.isSpanish ? "Ubicaci&oacute;n encontrado usando HTML5"
                             : "Location found using HTML5.") + "<br>" + viewModel.welcomeText
                     });
+                    infowindow.open(self.map);
 
-                    viewModel.map.setCenter(pos);
-                    // TODO: execute all the rest outside of this section, so it'll apply in case of no geolocation too
-                    viewModel.map.setZoom(18);
                     Pace.stop();
 
                     var search_input = /** @type {HTMLInputElement} */(document.getElementById('pac-input'));
@@ -122,17 +130,24 @@
                             contentType: "application/json",
                             dataType: "json"
                         }).success(function (returnData) {
-                            var retJson = JSON.parse(returnData);
+                            var retJson = //JSON.parse(returnData);
+                                [ { "lat":  36.740769, "lon": -119.798396, "name": "Tokyo Garden", "marker": null },
+                                  { "lat":  36.743409, "lon": -119.798075, "name": "Fajita Fiesta", "marker": null },
+                                  { "lat":  36.741715, "lon": -119.796637, "name": "Toledo's Mexican", "marker": null } ];
+
                             console.log("Success, got " + retJson.length + " entries");
 
                             // Clear existing markers
-                            //marker.setMap(null);
+                            for(var i = 0; i < viewModel.markers.length; i++) {
+                                viewModel.markers[i].marker.setMap(null);
+                            }
+                            viewModel.markers = [];
 
                             var bounds = new google.maps.LatLngBounds();
                             for(var i = 0; i < retJson.length; i++) {
-                                markers = [];
-                                self.placeMarker({"lat":  new Number(retJson[i].LATITUDE), "lon": new Number(retJson[i].LONGITUDE), "name": retJson[i].name, "content": retJson[i], "marker": null});
-                                bounds.extend(new google.maps.LatLng(new Number(retJson[i].LATITUDE), new Number(retJson[i].LONGITUDE)));
+                                var markerData = new MarkerData(retJson[i].LATITUDE, retJson[i].LONGITUDE, retJson[i].name, retJson[i]);
+                                viewModel.placeMarker(markerData);
+                                bounds.extend(markerData.latlng);
                             }
                             map.fitBounds(bounds);
                         }).error(function (data) {
