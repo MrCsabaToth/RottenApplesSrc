@@ -1,23 +1,25 @@
 (function (window) {
     var ViewModel = function () {
         var self = this;
-        self.is_spanish = false;
-        self.marker = [];
+        self.isSpanish = false;
+        self.markers = [];
         //[ { "lat":  36.740769, "lon": -119.798396, "name": "Tokyo Garden", "marker": null },
         //  { "lat":  36.743409, "lon": -119.798075, "name": "Fajita Fiesta", "marker": null },
         //  { "lat":  36.741715, "lon": -119.796637, "name": "Toledo's Mexican", "marker": null } ];
         self.map = null;
+        self.welcomeText = "";
 
         self.handleNoGeolocation = function(errorFlag) {
+            var content = "";
             if (errorFlag) {
-                var content = viewModel.is_spanish ? "Error: El servicio de Geolocalizaci&oacute;n fracas&oacute;." : "Error: The Geolocation service failed.";
+                content += viewModel.isSpanish ? "El servicio de Geolocalizaci&oacute;n fracas&oacute;." : "The Geolocation service failed.";
             } else {
-                var content = viewModel.is_spanish ? "Error: Su navegador no soporta geolocalizaci&oacute;n." : "Error: Your browser doesn't support geolocation.";
+                content += viewModel.isSpanish ? "Su navegador no soporta geolocalizaci&oacute;n." : "Your browser doesn't support geolocation.";
             }
 
             var infowindow = new google.maps.InfoWindow({
                 map: self.map,
-                content: content
+                content: content + "<br>" + self.welcomeText
             });
             map.setCenter(options.position);
             Pace.stop();
@@ -35,7 +37,7 @@
                 map: self.map,
                 animation: google.maps.Animation.DROP
             });
-            self.marker.push(marker);
+            self.markers.push(marker);
             var infowindow = new google.maps.InfoWindow({
                 map: self.map,
                 content: pindata.name +
@@ -55,7 +57,7 @@
         viewModel.initialize();
 
         $("#spanishbtn").click(function() {
-            viewModel.is_spanish = true;
+            viewModel.isSpanish = true;
             $("#languageDialog").modal("hide");
         });
 
@@ -82,7 +84,7 @@
             if (ej.browserInfo().name == "msie" && ej.browserInfo().version < 9) {
                 var infowindow = new google.maps.InfoWindow({
                     map: self.map,
-                    content: viewModel.is_spanish ?
+                    content: viewModel.isSpanish ?
                         "Radial Men&uacute; requerido para esta aplicaci&oacute;n s&oacute;lo es compatible con versi&oacute;n de Internet Explorer 9 y superiores." :
                         "Radial Menu required for this application is only supported from Internet Explorer Versioned 9 and above."
                 });
@@ -97,15 +99,17 @@
                     var infowindow = new google.maps.InfoWindow({
                         map: viewModel.map,
                         position: pos,
-                        content: viewModel.is_spanish ? "Ubicaci&oacute;n encontrado usando HTML5" : "Location found using HTML5."
+                        content: (viewModel.isSpanish ? "Ubicaci&oacute;n encontrado usando HTML5"
+                            : "Location found using HTML5.") + "<br>" + viewModel.welcomeText
                     });
 
-                    map.setCenter(pos);
-                    map.setZoom(18);
+                    viewModel.map.setCenter(pos);
+                    // TODO: execute all the rest outside of this section, so it'll apply in case of no geolocation too
+                    viewModel.map.setZoom(18);
                     Pace.stop();
 
                     var search_input = /** @type {HTMLInputElement} */(document.getElementById('pac-input'));
-                    map.controls[google.maps.ControlPosition.TOP_LEFT].push(search_input);
+                    viewModel.map.controls[google.maps.ControlPosition.TOP_LEFT].push(search_input);
                     var searchBox = new google.maps.places.SearchBox(/** @type {HTMLInputElement} */(search_input));
                     google.maps.event.addListener(searchBox, 'places_changed', function() {
                         var keyword = $("#pac-input").val().replace(/\W /g, '');
@@ -124,13 +128,13 @@
                             // Clear existing markers
                             //marker.setMap(null);
 
+                            var bounds = new google.maps.LatLngBounds();
                             for(var i = 0; i < retJson.length; i++) {
                                 markers = [];
-                                var bounds = new google.maps.LatLngBounds();
                                 self.placeMarker({"lat":  new Number(retJson[i].LATITUDE), "lon": new Number(retJson[i].LONGITUDE), "name": retJson[i].name, "content": retJson[i], "marker": null});
                                 bounds.extend(new google.maps.LatLng(new Number(retJson[i].LATITUDE), new Number(retJson[i].LONGITUDE)));
-                                map.fitBounds(bounds);
                             }
+                            map.fitBounds(bounds);
                         }).error(function (data) {
                             console.log("Error: " + data.responseText);
                         });
@@ -145,11 +149,14 @@
         };
 
         $('#languageDialog').on('hidden.bs.modal', function () {
+            viewModel.welcomeText = viewModel.isSpanish ?
+                "Por favor introduzca una palabra clave en el cuadro de búsqueda y pulse ENTER" :
+                "Please enter a keyword into the search box and press enter.";
             var script  = document.createElement('script');
             script.type = "text/javascript";
             scriptsrc = 'https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&sensor=true';
             // Intentionally not initializing places library so it wont interfere with us - &libraries=places';
-            if (viewModel.is_spanish)
+            if (viewModel.isSpanish)
                 scriptsrc += "&language=es";
             scriptsrc += '&callback=initializeMaps';
             script.src  = scriptsrc;
