@@ -11,9 +11,9 @@
 
         self.handleNoGeolocation = function(errorFlag) {
             if (errorFlag) {
-                var content = viewModel.is_spanish ? "Error: Ubicaci&oacute;n encontrado" : "Error: El servicio de Geolocalizaci&oacute;n fracas&oacute;.";
+                var content = viewModel.is_spanish ? "Error: El servicio de Geolocalizaci&oacute;n fracas&oacute;." : "Error: The Geolocation service failed.";
             } else {
-                var content = viewModel.is_spanish ? "Ubicaci&oacute;n encontrado" : "Error: Su navegador no soporta geolocalizaci&oacute;n.";
+                var content = viewModel.is_spanish ? "Error: Su navegador no soporta geolocalizaci&oacute;n." : "Error: Your browser doesn't support geolocation.";
             }
 
             var options = {
@@ -46,6 +46,7 @@
                     '<br>Longitude: ' + latlon.lng()
             });
             google.maps.event.addListener(marker, 'click', function() {
+                //$('#nestedradialmenu').ejRadialMenu("show");
                 infowindow.open(self.map, marker);
             });
         };
@@ -64,17 +65,17 @@
         window.menuclick = function(evt) {
             $('#nestedradialmenu').ejRadialMenu("menuHide");
         };
-        //if (!(ej.browserInfo().name == "msie" && ej.browserInfo().version < 9)) {
+        if (!(ej.browserInfo().name == "msie" && ej.browserInfo().version < 9)) {
             $('#nestedradialmenu').ejRadialMenu({
                 imageClass: "imageclass",
                 backImageClass: "backimageclass",
                 targetElementId: "map-canvas",
                 mouseUp: "menuclick"
             });
-        //}
-        //} else {
-        //    $("#contentDiv").html("Radial Menu is only supported from Internet Explorer Versioned 9 and above.").css({ "font-size": "20px", "color": "red" });
-        //}
+        } else {
+
+            $("#contentDiv").html("Radial Menu is only supported from Internet Explorer Versioned 9 and above.").css({ "font-size": "20px", "color": "red" });
+        }
 
         window.initializeMaps = function() {
             var mapOptions = {
