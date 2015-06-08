@@ -108,7 +108,7 @@
                     map.controls[google.maps.ControlPosition.TOP_LEFT].push(search_input);
                     var searchBox = new google.maps.places.SearchBox(/** @type {HTMLInputElement} */(search_input));
                     google.maps.event.addListener(searchBox, 'places_changed', function() {
-                        var keyword = $("#pac-input").val();
+                        var keyword = $("#pac-input").val().replace(/\W /g, '');
                         console.log("search keywrod: " + keyword);
                         $.ajax({
                             type: "POST",
