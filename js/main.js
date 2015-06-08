@@ -37,7 +37,7 @@
 
         self.placeMarker = function(markerData) {
             var marker = new google.maps.Marker({
-                position: markerData.latlon,
+                position: markerData.latlng,
                 icon: 'img/apple-map-pin.png',
                 map: self.map,
                 animation: google.maps.Animation.DROP
@@ -122,18 +122,18 @@
                     google.maps.event.addListener(searchBox, 'places_changed', function() {
                         var keyword = $("#pac-input").val().replace(/\W /g, '');
                         console.log("search keywrod: " + keyword);
-                        $.ajax({
-                            type: "POST",
-                            url: "http://d6cfa80b.ngrok.io/hospitals_list?filter=" + keyword,
-                            data: JSON.stringify(""),
-                            processData: false,
-                            contentType: "application/json",
-                            dataType: "json"
-                        }).success(function (returnData) {
+                        //$.ajax({
+                        //    type: "POST",
+                        //    url: "http://d6cfa80b.ngrok.io/hospitals_list?filter=" + keyword,
+                        //    data: JSON.stringify(""),
+                        //    processData: false,
+                        //    contentType: "application/json",
+                        //    dataType: "json"
+                        //}).success(function (returnData) {
                             var retJson = //JSON.parse(returnData);
-                                [ { "lat":  36.740769, "lon": -119.798396, "name": "Tokyo Garden", "marker": null },
-                                  { "lat":  36.743409, "lon": -119.798075, "name": "Fajita Fiesta", "marker": null },
-                                  { "lat":  36.741715, "lon": -119.796637, "name": "Toledo's Mexican", "marker": null } ];
+                                [ { "LATITUDE":  36.740769, "LONGITUDE": -119.798396, "name": "Tokyo Garden", "marker": null },
+                                  { "LATITUDE":  36.743409, "LONGITUDE": -119.798075, "name": "Fajita Fiesta", "marker": null },
+                                  { "LATITUDE":  36.741715, "LONGITUDE": -119.796637, "name": "Toledo's Mexican", "marker": null } ];
 
                             console.log("Success, got " + retJson.length + " entries");
 
@@ -145,14 +145,14 @@
 
                             var bounds = new google.maps.LatLngBounds();
                             for(var i = 0; i < retJson.length; i++) {
-                                var markerData = new MarkerData(retJson[i].LATITUDE, retJson[i].LONGITUDE, retJson[i].name, retJson[i]);
+                                var markerData = new MarkerData(i, retJson[i].LATITUDE, retJson[i].LONGITUDE, retJson[i].name, retJson[i]);
                                 viewModel.placeMarker(markerData);
                                 bounds.extend(markerData.latlng);
                             }
-                            map.fitBounds(bounds);
-                        }).error(function (data) {
-                            console.log("Error: " + data.responseText);
-                        });
+                            viewModel.map.fitBounds(bounds);
+                        //}).error(function (data) {
+                        //    console.log("Error: " + data.responseText);
+                        //});
                     });
                 }, function() {
                     viewModel.handleNoGeolocation(true);
@@ -169,8 +169,9 @@
                 "Please enter a keyword into the search box and press enter.";
             var script  = document.createElement('script');
             script.type = "text/javascript";
-            scriptsrc = 'https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&sensor=true';
-            // Intentionally not initializing places library so it wont interfere with us - &libraries=places';
+            scriptsrc = 'https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&sensor=true' + '&libraries=places';
+            // Intentionally trying not initializing places library so it wont interfere with us
+            // But if I don't initialize it, SearchBox cannot be registered for events
             if (viewModel.isSpanish)
                 scriptsrc += "&language=es";
             scriptsrc += '&callback=initializeMaps';
