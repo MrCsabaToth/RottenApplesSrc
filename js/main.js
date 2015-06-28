@@ -15,24 +15,83 @@
         self.map = null;
         self.welcomeText = "";
         self.radialMissingInfoWindow = null;
+        self.bitwisePos = null;
 
         self.handleNoGeolocation = function(errorFlag) {
             var content = "";
             if (errorFlag) {
-                content += self.isSpanish ? "El servicio de Geolocalizaci&oacute;n fracas&oacute;." : "The Geolocation service failed.";
+                content += self.isSpanish ? "No era capaz de determinar su ubicaci&oacute;n con el servicio de geolocalizaci&oacute;n." : "Wasn't able to determine your location with the geolocation service.";
             } else {
                 content += self.isSpanish ? "Su navegador no soporta geolocalizaci&oacute;n." : "Your browser doesn't support geolocation.";
             }
 
+            self.postInitialize(null);
+            Pace.stop();
+
             var infowindow = new google.maps.InfoWindow({
                 map: self.map,
+                position: self.bitwisePos,
                 content: content + "<br>" + self.welcomeText
             });
-            Pace.stop();
+            infowindow.open(self.map);
         };
 
-        self.initialize = function() {
+        self.preInitialize = function() {
             $("#languageDialog").modal("show");
+        };
+
+        self.postInitialize = function(pos) {
+            self.map.setZoom(18);
+            if (pos) {
+                var infowindow = new google.maps.InfoWindow({
+                    map: self.map,
+                    position: pos,
+                    content: (self.isSpanish ? "Ubicaci&oacute;n encontrado usando HTML5"
+                        : "Location found using HTML5.") + "<br>" + self.welcomeText
+                });
+                infowindow.open(self.map);
+            }
+
+            Pace.stop();
+
+            var search_input = /** @type {HTMLInputElement} */(document.getElementById('pac-input'));
+            self.map.controls[google.maps.ControlPosition.TOP_LEFT].push(search_input);
+            var searchBox = new google.maps.places.SearchBox(/** @type {HTMLInputElement} */(search_input));
+            google.maps.event.addListener(searchBox, 'places_changed', function() {
+                var keyword = $("#pac-input").val().replace(/\W /g, '');
+                console.log("search keywrod: " + keyword);
+                //$.ajax({
+                //    type: "POST",
+                //    url: "http://d6cfa80b.ngrok.io/hospitals_list?filter=" + keyword,
+                //    data: JSON.stringify(""),
+                //    processData: false,
+                //    contentType: "application/json",
+                //    dataType: "json"
+                //}).success(function (returnData) {
+                    var retJson = //JSON.parse(returnData);
+                        [ { "LATITUDE":  36.740769, "LONGITUDE": -119.798396, "name": "Tokyo Garden", "marker": null },
+                          { "LATITUDE":  36.743409, "LONGITUDE": -119.798075, "name": "Fajita Fiesta", "marker": null },
+                          { "LATITUDE":  36.741715, "LONGITUDE": -119.796637, "name": "Toledo's Mexican", "marker": null } ];
+
+                    console.log("Success, got " + retJson.length + " entries");
+
+                    // Clear existing markers
+                    for(var i = 0; i < self.markers.length; i++) {
+                        self.markers[i].marker.setMap(null);
+                    }
+                    self.markers = [];
+
+                    var bounds = new google.maps.LatLngBounds();
+                    for(var i = 0; i < retJson.length; i++) {
+                        var markerData = new MarkerData(i, retJson[i].LATITUDE, retJson[i].LONGITUDE, retJson[i].name, retJson[i]);
+                        self.placeMarker(markerData);
+                        bounds.extend(markerData.latlng);
+                    }
+                    self.map.fitBounds(bounds);
+                //}).error(function (data) {
+                //    console.log("Error: " + data.responseText);
+                //});
+            });
         };
 
         self.placeMarker = function(markerData) {
@@ -80,7 +139,7 @@
     $(document).ready(function() {
         Pace.start();
         var viewModel = new ViewModel();
-        viewModel.initialize();
+        viewModel.preInitialize();
 
         $("#spanishbtn").click(function() {
             viewModel.isSpanish = true;
@@ -92,9 +151,10 @@
         };
 
         window.initializeMaps = function() {
+            viewModel.bitwisePos = new google.maps.LatLng(36.742130, -119.795411);
             var mapOptions = {
                 zoom: 12,
-                center: new google.maps.LatLng(36.742130, -119.795411)
+                center: viewModel.bitwisePos
             };
             var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
             viewModel.map = map;
@@ -116,56 +176,7 @@
                                                      position.coords.longitude);
 
                     viewModel.map.setCenter(pos);
-                    // TODO: execute all the rest outside of this section, so it'll apply in case of no geolocation too
-                    viewModel.map.setZoom(18);
-                    var infowindow = new google.maps.InfoWindow({
-                        map: viewModel.map,
-                        position: pos,
-                        content: (viewModel.isSpanish ? "Ubicaci&oacute;n encontrado usando HTML5"
-                            : "Location found using HTML5.") + "<br>" + viewModel.welcomeText
-                    });
-                    infowindow.open(viewModel.map);
-
-                    Pace.stop();
-
-                    var search_input = /** @type {HTMLInputElement} */(document.getElementById('pac-input'));
-                    viewModel.map.controls[google.maps.ControlPosition.TOP_LEFT].push(search_input);
-                    var searchBox = new google.maps.places.SearchBox(/** @type {HTMLInputElement} */(search_input));
-                    google.maps.event.addListener(searchBox, 'places_changed', function() {
-                        var keyword = $("#pac-input").val().replace(/\W /g, '');
-                        console.log("search keywrod: " + keyword);
-                        //$.ajax({
-                        //    type: "POST",
-                        //    url: "http://d6cfa80b.ngrok.io/hospitals_list?filter=" + keyword,
-                        //    data: JSON.stringify(""),
-                        //    processData: false,
-                        //    contentType: "application/json",
-                        //    dataType: "json"
-                        //}).success(function (returnData) {
-                            var retJson = //JSON.parse(returnData);
-                                [ { "LATITUDE":  36.740769, "LONGITUDE": -119.798396, "name": "Tokyo Garden", "marker": null },
-                                  { "LATITUDE":  36.743409, "LONGITUDE": -119.798075, "name": "Fajita Fiesta", "marker": null },
-                                  { "LATITUDE":  36.741715, "LONGITUDE": -119.796637, "name": "Toledo's Mexican", "marker": null } ];
-
-                            console.log("Success, got " + retJson.length + " entries");
-
-                            // Clear existing markers
-                            for(var i = 0; i < viewModel.markers.length; i++) {
-                                viewModel.markers[i].marker.setMap(null);
-                            }
-                            viewModel.markers = [];
-
-                            var bounds = new google.maps.LatLngBounds();
-                            for(var i = 0; i < retJson.length; i++) {
-                                var markerData = new MarkerData(i, retJson[i].LATITUDE, retJson[i].LONGITUDE, retJson[i].name, retJson[i]);
-                                viewModel.placeMarker(markerData);
-                                bounds.extend(markerData.latlng);
-                            }
-                            viewModel.map.fitBounds(bounds);
-                        //}).error(function (data) {
-                        //    console.log("Error: " + data.responseText);
-                        //});
-                    });
+                    viewModel.postInitialize(pos);
                 }, function() {
                     viewModel.handleNoGeolocation(true);
                 });
