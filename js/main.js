@@ -115,7 +115,7 @@
                 if (ej.browserInfo().name == "msie" && ej.browserInfo().version < 9) {
                     viewModel.radialMissingInfoWindow.open(self.map, marker);
                 } else {
-                    window.radialItems = [
+                    self.radialItems = [
                         { "imageUrl": "themes/images/RadialMenu/copy.png", "text": "Copy" },
                         { "imageUrl": "themes/images/RadialMenu/font.png", "text": "Font" },
                         { "imageUrl": "themes/images/RadialMenu/f1.png", "text": "Italic", "items": [
@@ -126,9 +126,9 @@
                     $('#nestedradialmenu').ejRadialMenu({
                         imageClass: "imageclass",
                         backImageClass: "backimageclass",
-                        targetElementId: "map-canvas",
+                        targetElementId: "map-canvas",  // "gmInner"
                         mouseUp: "menuclick",
-                        items: window.radialItems
+                        items: self.radialItems
                     });
                     $('#nestedradialmenu').ejRadialMenu("show");
                 }
@@ -167,6 +167,9 @@
                         "Radial Menu required for this application is only supported from Internet Explorer Versioned 9 and above."
                 });
                 infowindow.open(viewModel.map);
+            } else {
+                $("#map-canvas").append("<div id='nestedradialmenu'></div>");
+                //$(".gm-style").attr("id", "gmInner");
             }
 
             // Try HTML5 geolocation
