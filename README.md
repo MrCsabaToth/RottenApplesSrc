@@ -3,20 +3,12 @@
 * Hosted prototype: http://MrCsabaToth.github.io/RottenApples/
 * This application was developed for the Hack For Health Fresno / Civic Hacking Day during a 4 hour sprint
 * Date: 6/6/2015
-* Location: Bitwise Industries
+* Hackathon location: Bitwise Industries
 
 # User Story
 
 * A user could query and drill down into aggregated data about health care facilities in Fresno area easily.
 * Utilizing speech recognition of mobile platforms (part of the platforms, not our project)
-
-# Server side
-
-* we integrated 60+ datasets
-* The query by a key word will filter that data
-* Written in Python
-* NLP queries in the future?
-* Possible regression of datasets where several year is available
 
 # Client Side
 
@@ -27,7 +19,16 @@
 (demoed at the pitch, but currently under development)
 * Future: getting data visualization working and fancy
 
+# Server side
+
+* we integrated 60+ datasets
+* The query by a key word will filter that data
+* Written in Python
+* NLP queries in the future?
+* Possible regression of datasets where several year is available
+* Server side haven't been plugged-in to the client side yet
+
 # Developers
 
+* Client side: Csaba Toth
 * Server side: Bryant Cardwell
-* Client side: Toth Csaba
