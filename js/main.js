@@ -53,6 +53,7 @@
             }
 
             Pace.stop();
+            $($(".gm-style")[0]).attr("id", "gmInner");
 
             var search_input = /** @type {HTMLInputElement} */(document.getElementById('pac-input'));
             self.map.controls[google.maps.ControlPosition.TOP_LEFT].push(search_input);
@@ -126,7 +127,7 @@
                     $('#nestedradialmenu').ejRadialMenu({
                         imageClass: "imageclass",
                         backImageClass: "backimageclass",
-                        targetElementId: "map-canvas",  // "gmInner"
+                        targetElementId: "gmInner", // "map-canvas",  // "gmInner"
                         mouseUp: "menuclick",
                         items: self.radialItems
                     });
@@ -169,7 +170,6 @@
                 infowindow.open(viewModel.map);
             } else {
                 $("#map-canvas").append("<div id='nestedradialmenu'></div>");
-                //$(".gm-style").attr("id", "gmInner");
             }
 
             // Try HTML5 geolocation
