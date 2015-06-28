@@ -1,5 +1,6 @@
-# RottenApplesSrc
+# RottenApples
 
+* Hosted prototype: http://MrCsabaToth.github.io/RottenApples/
 * This application was developed for the Hack For Health Fresno / Civic Hacking Day during a 4 hour sprint
 * Date: 6/6/2015
 * Location: Bitwise Industries
