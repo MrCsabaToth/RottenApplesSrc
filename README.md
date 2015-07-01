@@ -15,8 +15,7 @@
 * Pure HTML5/CSS/JavaScript
 * Since mobile usage was a primary goal, the whole UI is taken up by Google Maps canvas
 * Spanish multi-language support
-* The data visualization will be done by multi-level radial context menus, when the user clicks on custom pin
-(demoed at the pitch, but currently under development)
+* The data visualization will be done by a combination of multi-level radial context menus (thank you Synfusion https://www.syncfusion.com/products/javascript/ejradialmenu) when the user clicks on custom pin (demoed at the pitch, but currently under development), followed by information boxes and graphs
 * Future: getting data visualization working and fancy
 
 # Server side
