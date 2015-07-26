@@ -102,6 +102,7 @@
                 map: self.map,
                 animation: google.maps.Animation.DROP
             });
+            marker.appleId = markerData.id;
             markerData.marker = marker;
             self.markers.push(markerData);
             var varName = "radialItems" + markerData.id;
@@ -134,8 +135,7 @@
                 if (ej.browserInfo().name == "msie" && ej.browserInfo().version < 9) {
                     viewModel.radialMissingInfoWindow.open(self.map, marker);
                 } else {
-                    var id = 1; // TODO: determine clicked item from the coordinates
-                    $('#radmenu' + 1).ejRadialMenu("show");
+                    $('#radmenu' + marker.appleId).ejRadialMenu("show");
                 }
             });
         };
