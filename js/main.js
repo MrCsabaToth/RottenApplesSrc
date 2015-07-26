@@ -104,6 +104,7 @@
             });
             markerData.marker = marker;
             self.markers.push(markerData);
+            var varName = "radialItems" + markerData.id;
             if (ej.browserInfo().name == "msie" && ej.browserInfo().version < 9) {
                 self.radialMissingInfoWindow = new google.maps.InfoWindow({
                     map: self.map,
@@ -111,27 +112,30 @@
                         "El componente de men&uacute; radial no est&aacute; disponible en su navegador. Utilice Firefox, Chrome, Safari, Edge o la versi&oacute;n m&aacute;s reciente de Internet Explorer" :
                         "The radial menu component is not available on your browser. Please use Firefox, Chrome, Safari, Edge or newer version of Internet Explorer"
                 });
+            } else {
+                $("#map-canvas").append("<div id='radmenu" + markerData.id + "'></div>");
+                self["varName"] = [
+                    { "imageUrl": "themes/images/RadialMenu/copy.png", "text": "Copy" + markerData.id },
+                    { "imageUrl": "themes/images/RadialMenu/font.png", "text": "Font" + markerData.id },
+                    { "imageUrl": "themes/images/RadialMenu/f1.png", "text": "Italic" + markerData.id, "items": [
+                        { "imageUrl": "themes/images/RadialMenu/f2.png", "text": "Bold" + markerData.id },
+                        { "imageUrl": "themes/images/RadialMenu/font.png", "text": "Font" + markerData.id },
+                        { "imageUrl": "themes/images/RadialMenu/f1.png", "text": "Italic" + markerData.id}]
+                    }];
+                $('#radmenu' + markerData.id).ejRadialMenu({
+                    imageClass: "imageclass",
+                    backImageClass: "backimageclass",
+                    targetElementId: "gmInner", // "map-canvas",  // "gmInner"
+                    mouseUp: "menuclick",
+                    items: self["varName"]
+                });
             }
             google.maps.event.addListener(marker, 'click', function() {
                 if (ej.browserInfo().name == "msie" && ej.browserInfo().version < 9) {
                     viewModel.radialMissingInfoWindow.open(self.map, marker);
                 } else {
-                    self.radialItems = [
-                        { "imageUrl": "themes/images/RadialMenu/copy.png", "text": "Copy" },
-                        { "imageUrl": "themes/images/RadialMenu/font.png", "text": "Font" },
-                        { "imageUrl": "themes/images/RadialMenu/f1.png", "text": "Italic", "items": [
-                                        { "imageUrl": "themes/images/RadialMenu/f2.png", "text": "Bold" },
-                                        { "imageUrl": "themes/images/RadialMenu/font.png", "text": "Font" },
-                                        { "imageUrl": "themes/images/RadialMenu/f1.png", "text": "Italic"}]
-                        }];
-                    $('#nestedradialmenu').ejRadialMenu({
-                        imageClass: "imageclass",
-                        backImageClass: "backimageclass",
-                        targetElementId: "gmInner", // "map-canvas",  // "gmInner"
-                        mouseUp: "menuclick",
-                        items: self.radialItems
-                    });
-                    $('#nestedradialmenu').ejRadialMenu("show");
+                    var id = 1; // TODO: determine clicked item from the coordinates
+                    $('#radmenu' + 1).ejRadialMenu("show");
                 }
             });
         };
@@ -168,8 +172,6 @@
                         "Radial Menu required for this application is only supported from Internet Explorer Versioned 9 and above."
                 });
                 infowindow.open(viewModel.map);
-            } else {
-                $("#map-canvas").append("<div id='nestedradialmenu'></div>");
             }
 
             // Try HTML5 geolocation
